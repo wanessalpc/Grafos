@@ -1,8 +1,14 @@
-﻿namespace TP
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TP
 {
     public class Grafo
     {
-
+        List<List<Vertice>> grafo = new List<List<Vertice>>();
 
         public bool isAdjacente(Vertice v1, Vertice v2)
         {
