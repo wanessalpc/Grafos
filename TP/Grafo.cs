@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace TP
 {
     public class Grafo
     {
         List<List<Vertice>> grafo = new List<List<Vertice>>();
+
         /*
         grafo - [
         
@@ -19,22 +21,22 @@ namespace TP
          v3  -> v1 -> v1 -> v2
         */
 
-        public bool isAdjacente(Vertice v1, Vertice v2)
+        Dictionary<Vertice, List<Vertice>> grafo3 = new Dictionary<Vertice, List<Vertice>>();
+
+        public bool IsAdjacente(Vertice v1, Vertice v2)
         {
             bool isAdj = false;
-            grafo.ForEach(subLista =>
+            List<Vertice> subLista;
+            if (grafo3.TryGetValue(v1, out subLista)) // tenta pegar o valor na lista, se não encontrar
             {
-                if (subLista.Contains(v1) && subLista.Contains(v2))
+                if (subLista.Contains(v2))
                 {
-                    int indexV1 = subLista.IndexOf(v1);
-                    int indexV2 = subLista.IndexOf(v2);
-                    if (indexV1 - 1 == indexV2 || indexV1 + 1 == indexV2)
-                    {
-                        isAdj = true;
-                    }
+                    isAdj = true;
                 }
-            });
+            }
+
             return isAdj;
+
         }
         public int getGrau(Vertice v1)
         {
