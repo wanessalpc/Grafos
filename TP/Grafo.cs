@@ -5,29 +5,21 @@ namespace TP
 {
     public class Grafo
     {
-        List<List<Vertice>> grafo = new List<List<Vertice>>();
 
-        /*
-        grafo - [
-        
-        [v1, ...],
-        [v2, ...],
-        [v3, ...]
-        ]   
-        
-         Vértice inicial representa a sub lista do mesmo
-         v1  -> /
-         v2  -> v2 -> v3
-         v3  -> v1 -> v1 -> v2
+        Dictionary<Vertice, List<Vertice>> grafo = new Dictionary<Vertice, List<Vertice>>();
+
+        /*      
+            Key, Value -> no caso a nossa key é um vértice e o value é uma Lista de vértices
+            
+            [v1][v1 -> v2 -> v3]
+            [v2][ListaDeAdj]
         */
-
-        Dictionary<Vertice, List<Vertice>> grafo3 = new Dictionary<Vertice, List<Vertice>>();
 
         public bool IsAdjacente(Vertice v1, Vertice v2)
         {
             bool isAdj = false;
             List<Vertice> subLista;
-            if (grafo3.TryGetValue(v1, out subLista)) // tenta pegar o valor na lista, se não encontrar
+            if (grafo.TryGetValue(v1, out subLista)) // O TryGetValue retorna um booleano, se encontra o value ele é passado pra variável no out
             {
                 if (subLista.Contains(v2))
                 {
