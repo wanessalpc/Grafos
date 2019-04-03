@@ -31,7 +31,9 @@ namespace TP
             g.grafo.Add(v2, adj2);
             g.grafo.Add(v3, adj3);
 
-           
+
+
+
         }
     }
 }

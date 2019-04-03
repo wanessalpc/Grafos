@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TP
 {
@@ -14,7 +15,7 @@ namespace TP
             [v1][v1 -> v2 -> v3]
             [v2][ListaDeAdj]
         */
-     
+
         public bool IsAdjacente(Vertice v1, Vertice v2)
         {
             bool isAdj = false;
@@ -31,7 +32,7 @@ namespace TP
                     Console.WriteLine("Não são adjacentes :(");
                 }
             }
-            
+
 
             return isAdj;
 
@@ -39,7 +40,7 @@ namespace TP
         public int GetGrau(Vertice v1)
         {
             List<Vertice> listaDeAdj;
-            if(grafo.TryGetValue(v1, out listaDeAdj))
+            if (grafo.TryGetValue(v1, out listaDeAdj))
             {
                 return listaDeAdj.Count; // para cada vértice na lista de adjacentes, o grau do vértice aumenta
             }
@@ -56,10 +57,21 @@ namespace TP
         //{
 
         //}
-        //bool IsRegular()
-        //{
+        public bool IsRegular() // todos os vértices com o mesmo grau, para isso vamos ver se o tamanho da lista de adj é igual para todos os vértices
+        {
+            bool isRegular = false;
 
-        //}
+            int grauBase = grafo.Values.First().Count(); //  pegar o primeiro elemento e ver o tamanho da lista
+
+
+            if (grafo.Values.All(lista => lista.Count == grauBase))// vê se todas as listas adjacentes tem o mesmo tamanho
+            {
+                isRegular = true;
+            }
+
+            return isRegular;
+
+        }
         //bool IsNulo()
         //{
 
