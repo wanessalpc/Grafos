@@ -37,6 +37,7 @@ namespace TP
             return isAdj;
 
         }
+
         public int GetGrau(Vertice v1)
         {
             List<Vertice> listaDeAdj;
@@ -49,14 +50,36 @@ namespace TP
                 return 0; // se não achar o valor ele não tem adjacente
             }
         }
-        //bool IsIsolado(Vertice v1)
-        //{
 
-        //}
-        //bool IsPendente(Vertice v1)
-        //{
+        public bool IsIsolado(Vertice v1)
+        {
+            bool isIsolado = false;
+            List<Vertice> listaDeAdj;
+            if (grafo.TryGetValue(v1, out listaDeAdj))
+            {
+                if(listaDeAdj.Count() == 0 || (listaDeAdj.Count() == 1 && listaDeAdj.Contains(v1)))// se a lista estiver ou se ela conter um elemento e este for o próprio vértice(loop)
+                {
+                    isIsolado = true;
+                }
+            }
+            return isIsolado;
+        }
 
-        //}
+        public bool IsPendente(Vertice v1)// vértice de grau 1, verificar se a lista de adj do vértice tem apenas 1 elemento
+        {
+            bool isPendente = false;
+            List<Vertice> listaDeAdj;
+            if(grafo.TryGetValue(v1, out listaDeAdj))
+            {
+                if(listaDeAdj.Count == 1)
+                {
+                    isPendente = true;
+                }
+            }
+
+            return isPendente;
+        }
+
         public bool IsRegular() // todos os vértices com o mesmo grau, para isso vamos ver se o tamanho da lista de adj é igual para todos os vértices
         {
             bool isRegular = false;
@@ -72,6 +95,7 @@ namespace TP
             return isRegular;
 
         }
+        
         //bool IsNulo()
         //{
 
