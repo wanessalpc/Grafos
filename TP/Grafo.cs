@@ -95,16 +95,57 @@ namespace TP
             return isRegular;
 
         }
-        
-        //bool IsNulo()
-        //{
 
-        //}
-        //bool IsCompleto()
-        //{
+        public bool IsNulo()// grafo sem nenhuma aresta, ou seja os véritces não podem ter lista de adjacencia/ ela deve estar vazia
+        {
+            bool isNulo = true;
 
-        //}
-        //bool IsConexo()
+            // grafo.Values.Any() ->  o valor sempre existe, no caso deve-se verificar se a lista está vazia( ou se existe alguma lista que não esteja vazia)
+            if (grafo.Values.Any(lista => lista.Count() > 0)) 
+            {
+                isNulo = false;
+            }
+
+            return isNulo;
+        }
+
+        public bool IsCompleto()// a partir de um vértice é possivel alcançar todos os outros,
+        {
+            bool isCompleto = false;
+            int contagemGrande = 0;
+            //para cada vértice, pegar a lista dele e ver se nela contem os outros vértices
+            foreach (Vertice v in grafo.Keys)
+            {
+                int contagem = 0;
+                List<Vertice> listaDeAdj;
+                if (grafo.TryGetValue(v, out listaDeAdj))
+                {
+                   IEnumerable<Vertice> verticesFiltrados = grafo.Keys.Where(vertice => vertice != v).ToList();// lista com os outros vértices//sem ser o que está sendo lido
+                   IEnumerable<Vertice> listaSemLoop = listaDeAdj.Where(vertice => vertice != v).ToList();// lista de adj removendo o loop
+
+                    //verificar se as duas listas são iguais/se a listaSemLoop contem os verticesFiltrados 
+                    listaSemLoop.ToList().ForEach(vertice =>
+                    {
+                        if (verticesFiltrados.ToList().Contains(vertice))// se todos os contains derem true, então
+                        {
+                            contagem++;
+                        }                     
+                    });
+                    if(contagem == verticesFiltrados.Count())
+                    {
+                        contagemGrande++;
+                    }
+                }
+             }
+            if(contagemGrande == grafo.Keys.Count())
+            {
+                isCompleto = true;
+            }
+            return isCompleto;
+                
+        }
+
+        //bool IsConexo() // usar algoritimo de travessia
         //{
 
         //}
@@ -145,7 +186,7 @@ namespace TP
                 {
                     if (listaDeAdj.Count > 0)
                     {
-                        listaDeAdj.ForEach(vertice => Console.Write(" -> " + vertice.valor));
+                        listaDeAdj.ForEach(vertice => Console.Write(" -> " + vertice.nome));
                     }
                     else
                     {

@@ -9,6 +9,7 @@ namespace TP
     public class Vertice
     {
         public int valor;
+        public string nome;
 
     }
 }
