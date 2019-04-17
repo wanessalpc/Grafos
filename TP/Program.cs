@@ -9,9 +9,9 @@ namespace TP
     {
         public void LerArquivo() // Lê arquivo e cria vagas se nescessario.
         {
-            if (File.Exists("ListaArquivos.txt"))
+            if (File.Exists(@"C:\Users\Wanessa\Documents\GitHub\Grafos\TP\bin\Debug\ListaArquivos.txt"))
             {
-                using (StreamReader reader = new StreamReader("ListaArquivos.txt"))
+                using (StreamReader reader = new StreamReader(@"C:\Users\Wanessa\Documents\GitHub\Grafos\TP\bin\Debug\ListaArquivos.txt"))
                 {
                     while (!reader.EndOfStream) // Enquanto arquivo não acaba.
                     {
@@ -24,6 +24,7 @@ namespace TP
         public static void Main(string[] args)
         {
             Grafo g = new Grafo();
+            Program objArquivo = new Program();
 
             Vertice v1 = new Vertice(), v2 = new Vertice(), v3 = new Vertice();
             v1.valor = 1;
@@ -71,7 +72,8 @@ namespace TP
 
 
 
-
+            objArquivo.LerArquivo();
+            Console.ReadKey();
         }
     }
 }
