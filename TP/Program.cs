@@ -34,14 +34,7 @@ namespace TP
             g.grafo.Add(v3, adj3);
 
 
-            if (g.IsCompleto())
-            {
-                Console.WriteLine("o zé e completo");
-            }
-            else
-            {
-                Console.WriteLine("nem é zé");
-            }
+
 
 
 

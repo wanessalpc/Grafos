@@ -57,7 +57,7 @@ namespace TP
             List<Vertice> listaDeAdj;
             if (grafo.TryGetValue(v1, out listaDeAdj))
             {
-                if(listaDeAdj.Count() == 0 || (listaDeAdj.Count() == 1 && listaDeAdj.Contains(v1)))// se a lista estiver ou se ela conter um elemento e este for o próprio vértice(loop)
+                if (listaDeAdj.Count() == 0 || (listaDeAdj.Count() == 1 && listaDeAdj.Contains(v1)))// se a lista estiver ou se ela conter um elemento e este for o próprio vértice(loop)
                 {
                     isIsolado = true;
                 }
@@ -69,9 +69,9 @@ namespace TP
         {
             bool isPendente = false;
             List<Vertice> listaDeAdj;
-            if(grafo.TryGetValue(v1, out listaDeAdj))
+            if (grafo.TryGetValue(v1, out listaDeAdj))
             {
-                if(listaDeAdj.Count == 1)
+                if (listaDeAdj.Count == 1)
                 {
                     isPendente = true;
                 }
@@ -101,7 +101,7 @@ namespace TP
             bool isNulo = true;
 
             // grafo.Values.Any() ->  o valor sempre existe, no caso deve-se verificar se a lista está vazia( ou se existe alguma lista que não esteja vazia)
-            if (grafo.Values.Any(lista => lista.Count() > 0)) 
+            if (grafo.Values.Any(lista => lista.Count() > 0))
             {
                 isNulo = false;
             }
@@ -120,29 +120,32 @@ namespace TP
                 List<Vertice> listaDeAdj;
                 if (grafo.TryGetValue(v, out listaDeAdj))
                 {
-                   IEnumerable<Vertice> verticesFiltrados = grafo.Keys.Where(vertice => vertice != v).ToList();// lista com os outros vértices//sem ser o que está sendo lido
-                   IEnumerable<Vertice> listaSemLoop = listaDeAdj.Where(vertice => vertice != v).ToList();// lista de adj removendo o loop
+                    IEnumerable<Vertice> verticesFiltrados = grafo.Keys.Where(vertice => vertice != v).ToList();// lista com os outros vértices//sem ser o que está sendo lido
 
-                    //verificar se as duas listas são iguais/se a listaSemLoop contem os verticesFiltrados 
-                    listaSemLoop.ToList().ForEach(vertice =>
+                    if (!listaDeAdj.Contains(v))//não tiver loops
                     {
-                        if (verticesFiltrados.ToList().Contains(vertice))// se todos os contains derem true, então
+                        //verificar se as duas listas são iguais/se a lista de adj contem os verticesFiltrados 
+                        listaDeAdj.ForEach(vertice =>
                         {
-                            contagem++;
-                        }                     
-                    });
-                    if(contagem == verticesFiltrados.Count())
+                            if (verticesFiltrados.ToList().Contains(vertice))// se todos os contains derem true, então
+                            {
+                                contagem++;
+                            }
+                        });
+                    }
+
+                    if (contagem == verticesFiltrados.Count())
                     {
-                        contagemGrande++;
+                        contagemGrande++;// significa que o vértice está ligado a todos os outros vértices
                     }
                 }
-             }
-            if(contagemGrande == grafo.Keys.Count())
+            }
+            if (contagemGrande == grafo.Keys.Count())
             {
                 isCompleto = true;
             }
             return isCompleto;
-                
+
         }
 
         //bool IsConexo() // usar algoritimo de travessia
