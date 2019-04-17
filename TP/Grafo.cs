@@ -148,10 +148,74 @@ namespace TP
 
         }
 
-        //bool IsConexo() // usar algoritimo de travessia
-        //{
 
-        //}
+       
+        public bool IsConexo() // utilizando travessia em amplitude
+        {
+            return TravessiaAmplitude();
+        }
+
+        Queue<Vertice> fila = new Queue<Vertice>();
+        private bool TravessiaAmplitude()
+        {
+            bool isConexo = true;
+            foreach (Vertice v in grafo.Keys)
+            {
+                v.cor = "branco";
+                v.pred = null;
+                v.distancia = int.MaxValue;
+            }
+            foreach (Vertice v in grafo.Keys)
+            {
+                if (v.cor.Equals("branco"))
+                {
+                    if (!visitaBFS(v))
+                    {
+                        isConexo = false;
+                    }
+                }
+            }
+            return isConexo;
+        }
+
+        private bool VisitaBFS(Vertice v)
+        {
+            v.cor = "azul";
+            v.distancia = 0;
+
+            fila.Clear();
+            fila.Enqueue(v);
+            while (fila.Count > 0)
+            {
+                Vertice removido = fila.Dequeue();
+
+                List<Vertice> listaDeAdjRemovido = new List<Vertice>();
+                if (grafo.TryGetValue(removido, out listaDeAdjRemovido))
+                {
+                    foreach (Vertice vertice in listaDeAdjRemovido)
+                    {
+                        if (vertice.cor.Equals("branco"))
+                        {
+                            vertice.cor = "azul";
+                            vertice.distancia = removido.distancia + 1;
+                            vertice.pred = removido;
+                            fila.Enqueue(vertice);
+                        }
+                    }
+                    v.cor = "vermelho";
+                }
+            }
+            //Se a fila se esvaziar e ainda tiver vértices brancos do grafo, ele não é conexo
+            if (grafo.Keys.Any(vr => vr.cor.Equals("branco")))
+            {
+                return false;
+            }else
+            {
+                return true;
+            }
+        }
+
+
         //bool IsEuleriano()
         //{
 

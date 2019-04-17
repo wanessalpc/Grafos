@@ -28,15 +28,9 @@ namespace TP
             adj3.Add(v2);
 
 
-
             g.grafo.Add(v1, adj1);
             g.grafo.Add(v2, adj2);
             g.grafo.Add(v3, adj3);
-
-
-
-
-
 
 
         }

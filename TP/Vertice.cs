@@ -10,6 +10,9 @@ namespace TP
     {
         public int valor;
         public string nome;
+        public string cor;
+        public Vertice pred;
+        public int distancia;
 
     }
 }
