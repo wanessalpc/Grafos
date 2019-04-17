@@ -1,10 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+
 
 namespace TP
 {
     class Program
     {
+        public void LerArquivo() // Lê arquivo e cria vagas se nescessario.
+        {
+            if (File.Exists("ListaArquivos.txt"))
+            {
+                using (StreamReader reader = new StreamReader("ListaArquivos.txt"))
+                {
+                    while (!reader.EndOfStream) // Enquanto arquivo não acaba.
+                    {
+                        string linha = reader.ReadLine();
+                        string[] dados = linha.Split('-');
+                    }
+                }
+            }
+        }
         public static void Main(string[] args)
         {
             Grafo g = new Grafo();
@@ -37,6 +53,7 @@ namespace TP
 
 
 
+
             g.grafo.Add(v1, adj1);
             g.grafo.Add(v2, adj2);
             g.grafo.Add(v3, adj3);
@@ -49,6 +66,11 @@ namespace TP
             {
                 Console.WriteLine("nay");
             }
+
+
+
+
+
 
         }
     }
