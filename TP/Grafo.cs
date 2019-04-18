@@ -112,35 +112,28 @@ namespace TP
         public bool IsCompleto()// a partir de um vértice é possivel alcançar todos os outros,
         {
             bool isCompleto = false;
-            int contagemGrande = 0;
+            int contagem = 0;
             //para cada vértice, pegar a lista dele e ver se nela contem os outros vértices
             foreach (Vertice v in grafo.Keys)
             {
-                int contagem = 0;
+
                 List<Vertice> listaDeAdj;
                 if (grafo.TryGetValue(v, out listaDeAdj))
                 {
-                    IEnumerable<Vertice> verticesFiltrados = grafo.Keys.Where(vertice => vertice != v).ToList();// lista com os outros vértices//sem ser o que está sendo lido
+                    List<Vertice> verticesFiltrados = grafo.Keys.Where(vertice => vertice != v).ToList();// lista com os outros vértices//sem ser o que está sendo lido
 
                     if (!listaDeAdj.Contains(v))//não tiver loops
                     {
-                        //verificar se as duas listas são iguais/se a lista de adj contem os verticesFiltrados 
-                        listaDeAdj.ForEach(vertice =>
+
+                        if (verticesFiltrados.Count == listaDeAdj.Count && !verticesFiltrados.Except(listaDeAdj).Any())
                         {
-                            if (verticesFiltrados.ToList().Contains(vertice))// se todos os contains derem true, então
-                            {
-                                contagem++;
-                            }
-                        });
+                            contagem++;// significa que o vértice está ligado a todos os outros vértices
+                        }
                     }
 
-                    if (contagem == verticesFiltrados.Count())
-                    {
-                        contagemGrande++;// significa que o vértice está ligado a todos os outros vértices
-                    }
                 }
             }
-            if (contagemGrande == grafo.Keys.Count())
+            if (contagem == grafo.Keys.Count())
             {
                 isCompleto = true;
             }
@@ -148,8 +141,6 @@ namespace TP
 
         }
 
-
-       
         public bool IsConexo() // utilizando travessia em amplitude
         {
             return TravessiaAmplitude();
@@ -169,7 +160,7 @@ namespace TP
             {
                 if (v.cor.Equals("branco"))
                 {
-                    if (!visitaBFS(v))
+                    if (!VisitaBFS(v))
                     {
                         isConexo = false;
                     }
@@ -209,25 +200,76 @@ namespace TP
             if (grafo.Keys.Any(vr => vr.cor.Equals("branco")))
             {
                 return false;
-            }else
+            }
+            else
             {
                 return true;
             }
         }
 
+        public bool IsEuleriano() // Um grafo é euleriano se possuir todos os vértices de grau par e é conexo
+        {
+            bool isEuleriano = true;
+            if (IsConexo())
+            {
+                if (grafo.Values.Any(lista => lista.Count % 2 > 0)) // Grau par = lista de adj com tamanho par, no caso veremos se alguma lista tem tamanho ímpar
+                {
+                    isEuleriano = false;
+                }
+            }
 
-        //bool IsEuleriano()
-        //{
+            return isEuleriano;
+        }
 
-        //}
-        //bool IsUnicursal()
-        //{
+        public bool IsUnicursal()// Grafo que possui pelo menos um trajeto euleriano, usando a regra 2k = numero de vértices de grau impar
+        {
+            // lembrando que para ser um grafo o número de vértices de grau ímpar tem que ser par
+            bool isUnicursal = false;
 
-        //}
-        //Grafo GetComplementar()
-        //{
+            int numeroVerticesImpares = grafo.Values.Where(lista => lista.Count % 2 > 0).Count();// Número de vértices de grau ímpar
 
-        //}
+            if (numeroVerticesImpares / 2 > 0)
+            {
+                isUnicursal = true;
+            }
+
+            return isUnicursal;
+
+        }
+
+        public Dictionary<Vertice, List<Vertice>> GetComplementar()// são as arestas que faltam para um G ser completo
+        {
+            Dictionary<Vertice, List<Vertice>> complementar = new Dictionary<Vertice, List<Vertice>>();
+            if (!IsCompleto())
+            {
+                foreach (Vertice v in grafo.Keys)
+                {
+                    List<Vertice> verticesFiltrados = grafo.Keys.Where(vertice => vertice != v).ToList();// lista com os outros vértices do grafo
+
+                    List<Vertice> listaDeAdj;
+
+                    if (grafo.TryGetValue(v, out listaDeAdj))
+                    {
+                        if (verticesFiltrados.Count == listaDeAdj.Count && !verticesFiltrados.Except(listaDeAdj).Any()) // se as duas listas forem iguais o vértice está ligado aos outros 
+                        {
+                            complementar.Add(v, new List<Vertice>());//adicionar ele no complementar com uma lista vazia/nula
+                        }
+                        else
+                        {
+                            List<Vertice> verticesFaltam = verticesFiltrados.Except(listaDeAdj).ToList();// os vértices que o v não está ligado
+                            complementar.Add(v, verticesFaltam);
+                        }
+
+                    }
+
+                }
+
+            }
+            ImprimirGrafo(complementar);
+
+            return complementar;
+        }
+
         //Grafo GetAGMPrim(Vertice v1)
         //{
 
@@ -240,6 +282,81 @@ namespace TP
         //{
 
         //}
+
+        //-------------- Grafos Direcionados 
+
+        public int GetGrauEntrada(Vertice v1)
+        {
+            int grauEntrada = 0;
+            List<List<Vertice>> listasComVertice = grafo.Values.Where(lista => lista.Contains(v1)).ToList();// recupera as listas que contem o vértice
+            listasComVertice.ForEach(lista =>
+            {
+                grauEntrada += lista.Count(vertice => vertice == v1);
+
+            });
+
+            return grauEntrada;
+        }
+
+        public int GetGrauSaida(Vertice v1)
+        {
+            int grauSaida = 0;
+            List<Vertice> listaDeAdj;
+            if (grafo.TryGetValue(v1, out listaDeAdj))
+            {
+                grauSaida = listaDeAdj.Count;
+            }
+            return grauSaida;
+        }
+
+
+        bool hasCiclo = false; int tempo;
+        public bool HasCiclo()// travessia em profundidade, se tiver aresta de retorno o grafo é ciclico
+        {
+            hasCiclo = false;
+            TravessiaProfundidade();
+            return hasCiclo;
+        }
+
+        private void TravessiaProfundidade()
+        {
+            foreach (Vertice v in grafo.Keys)
+            {
+                v.cor = "branco";
+                v.pred = null;
+            }
+            tempo = 0;
+            foreach (Vertice v in grafo.Keys)
+            {
+                if (v.cor.Equals("branco"))
+                {
+                    Visita(v, tempo, v.cor);
+                }
+            }
+        }
+
+        private void Visita(Vertice v, int tempo, string cor)
+        {
+            v.cor = "azul";
+            v.descoberta = ++tempo;
+            List<Vertice> listaDeAdj;
+            if(grafo.TryGetValue(v, out listaDeAdj))
+            {
+                foreach(Vertice vertice in listaDeAdj)
+                {
+                    if (vertice.cor.Equals("branco"))
+                    {
+                        vertice.pred = v;
+                        Visita(vertice, tempo, vertice.cor);
+                    }else if (vertice.cor.Equals("azul"))// esta visitando um vértice já visitado, ou seja tem ciclo
+                    {
+                        hasCiclo = true;
+                    }
+                }
+                v.cor = "veremelho";
+                v.termino = ++tempo;
+            }
+        }
 
         public void ImprimirGrafo(Dictionary<Vertice, List<Vertice>> grafo)
         {

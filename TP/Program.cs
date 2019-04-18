@@ -27,11 +27,28 @@ namespace TP
             adj3.Add(v1);
             adj3.Add(v2);
 
+            //--- grafo direcionado
+            //adj1.Add(v1);
+            //adj2.Add(v1);
+            //adj2.Add(v2);
+            //adj2.Add(v3);
+            //adj2.Add(v3);
+            //adj3.Add(v1);
+
+
 
             g.grafo.Add(v1, adj1);
             g.grafo.Add(v2, adj2);
             g.grafo.Add(v3, adj3);
 
+            if ()//colocar o método que quer ser testado
+            {
+                Console.WriteLine("ye");
+            }
+            else
+            {
+                Console.WriteLine("nay");
+            }
 
         }
     }

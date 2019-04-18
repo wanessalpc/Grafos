@@ -13,6 +13,8 @@ namespace TP
         public string cor;
         public Vertice pred;
         public int distancia;
+        public int descoberta;
+        public int termino;
 
     }
 }
