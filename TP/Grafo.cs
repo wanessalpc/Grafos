@@ -22,10 +22,10 @@ namespace TP
             List<Vertice> listaDeAdj;
             if (grafo.TryGetValue(v1, out listaDeAdj)) // O TryGetValue retorna um booleano, se encontra o value ele é passado pra variável no out
             {
-                if (listaDeAdj.Contains(v2))
+                if (Contem(v2, listaDeAdj) != null)
                 {
                     isAdj = true;
-                    Console.WriteLine("Os vértices : " + v1.valor + " e " + v2.valor + " são adjacentes");
+                    Console.WriteLine("Os vértices : " + v1.nome + " e " + v2.nome + " são adjacentes");
                 }
                 else
                 {
@@ -57,7 +57,7 @@ namespace TP
             List<Vertice> listaDeAdj;
             if (grafo.TryGetValue(v1, out listaDeAdj))
             {
-                if (listaDeAdj.Count() == 0 || (listaDeAdj.Count() == 1 && listaDeAdj.Contains(v1)))// se a lista estiver ou se ela conter um elemento e este for o próprio vértice(loop)
+                if (listaDeAdj.Count() == 0 || (listaDeAdj.Count() == 1 && Contem(v1, listaDeAdj) != null))// se a lista estiver ou se ela conter um elemento e este for o próprio vértice(loop)
                 {
                     isIsolado = true;
                 }
@@ -122,7 +122,7 @@ namespace TP
                 {
                     List<Vertice> verticesFiltrados = grafo.Keys.Where(vertice => vertice != v).ToList();// lista com os outros vértices//sem ser o que está sendo lido
 
-                    if (!listaDeAdj.Contains(v))//não tiver loops
+                    if (Contem(v, listaDeAdj) == null)//não tiver loops
                     {
 
                         if (verticesFiltrados.Count == listaDeAdj.Count && !verticesFiltrados.Except(listaDeAdj).Any())
@@ -185,15 +185,16 @@ namespace TP
                 {
                     foreach (Vertice vertice in listaDeAdjRemovido)
                     {
-                        if (vertice.cor.Equals("branco"))
+                        Vertice verticeReal = BuscaVerticeReal(vertice);
+                        if (verticeReal.cor.Equals("branco"))
                         {
-                            vertice.cor = "azul";
-                            vertice.distancia = removido.distancia + 1;
-                            vertice.pred = removido;
-                            fila.Enqueue(vertice);
+                            verticeReal.cor = "azul";
+                            verticeReal.distancia = removido.distancia + 1;
+                            verticeReal.pred = removido;
+                            fila.Enqueue(verticeReal);
                         }
                     }
-                    v.cor = "vermelho";
+                    removido.cor = "vermelho";
                 }
             }
             //Se a fila se esvaziar e ainda tiver vértices brancos do grafo, ele não é conexo
@@ -250,13 +251,14 @@ namespace TP
 
                     if (grafo.TryGetValue(v, out listaDeAdj))
                     {
-                        if (verticesFiltrados.Count == listaDeAdj.Count && !verticesFiltrados.Except(listaDeAdj).Any()) // se as duas listas forem iguais o vértice está ligado aos outros 
+                        List<Vertice> listaDeAdjReal = listaDeAdj.ConvertAll(vertices => BuscaVerticeReal(vertices));
+                        if (verticesFiltrados.Count == listaDeAdj.Count && !verticesFiltrados.Except(listaDeAdjReal).Any()) // se as duas listas forem iguais o vértice está ligado aos outros 
                         {
                             complementar.Add(v, new List<Vertice>());//adicionar ele no complementar com uma lista vazia/nula
                         }
                         else
                         {
-                            List<Vertice> verticesFaltam = verticesFiltrados.Except(listaDeAdj).ToList();// os vértices que o v não está ligado
+                            List<Vertice> verticesFaltam = verticesFiltrados.Except(listaDeAdjReal).ToList();// os vértices que o v não está ligado
                             complementar.Add(v, verticesFaltam);
                         }
 
@@ -270,10 +272,105 @@ namespace TP
             return complementar;
         }
 
-        //Grafo GetAGMPrim(Vertice v1)
-        //{
+        public Dictionary<Vertice, List<Vertice>> GetAGMPrim(Vertice v1)
+        {
+            List<Vertice> incluidos = new List<Vertice>();// conjunto dos verticess já incluidos em T
+            List<Vertice> borda = new List<Vertice>();// conjuntos dos vertices candidatos a serem escolhidos na proxima iteração, para serem incluidos em T
+            Dictionary<Vertice, int> custo = new Dictionary<Vertice, int>();// custo da inclusão do vértice v em T
+            Dictionary<Vertice, List<Vertice>> T = new Dictionary<Vertice, List<Vertice>>();
+            borda.Add(v1);
+            foreach (Vertice v in grafo.Keys)
+            {
+                custo.Add(v, int.MaxValue);
+            }
+            custo[v1] = 0;
 
-        //}
+            while (borda.Count > 0 && custo.Count > 0)
+            {
+                // setar o menor custo para primeira pos   
+                var menorCusto = custo.OrderBy(kvp => kvp.Value).First();// ordena o custo para o menor custo ficar em primeiro
+
+                Vertice vComMenorCusto = borda.Find(v => v.nome == menorCusto.Key.nome);// encontra na borda onde fica o vértice com menor custo
+
+                List<Vertice> listinha = new List<Vertice>();
+
+                if (vComMenorCusto.pred != null)
+                {
+                    if (incluidos.Contains(vComMenorCusto.pred))
+                    {
+                        if (T.TryGetValue(vComMenorCusto, out List<Vertice> listaDeAdj))
+                        {
+                            listaDeAdj.Add(vComMenorCusto);
+                            T.Add(vComMenorCusto, listaDeAdj);
+                        }
+                    }
+                }
+                else
+                {
+                   //é o primeiro termo
+                }
+
+                incluidos.Add(vComMenorCusto);
+                Console.WriteLine("Inserido: " + vComMenorCusto.nome);
+                custo.Remove(vComMenorCusto);
+                borda.Remove(vComMenorCusto);
+
+
+                foreach (Vertice x in grafo.Keys)
+                {
+                    if (Contem(x, incluidos) == null)
+                    {
+                        if (custo.TryGetValue(x, out int peso))
+                        {
+                            if (Existe(vComMenorCusto, x) && peso > Peso(vComMenorCusto, x))
+                            {
+                                peso = Peso(vComMenorCusto, x);
+                                custo[x] = peso;
+                                x.pred = vComMenorCusto;
+                                borda.Add(x);
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (Vertice x in grafo.Keys)
+            {
+                if (grafo.TryGetValue(x, out List<Vertice> listaDeAdj))
+                {
+
+                }
+
+            }
+
+            return T;
+
+        }
+
+        private bool Existe(Vertice v1, Vertice v2)// se existe aresta entre os vértices
+        {
+            bool existe = false;
+            if (grafo.TryGetValue(v1, out List<Vertice> listaDeAdj))
+            {
+                if (listaDeAdj.Find(vertice => vertice.nome == v2.nome) != null)//existe aresta entre os dois vértices
+                {
+                    existe = true;
+                }
+            }
+
+            return existe;
+        }
+        private int Peso(Vertice v1, Vertice v2)// o peso da aresta  
+        {
+            Vertice v2NaListaDeV1 = new Vertice();
+            if (grafo.TryGetValue(v1, out List<Vertice> listaDeAdj))
+            {
+                v2NaListaDeV1 = listaDeAdj.Find(vertice => vertice.nome == v2.nome); // o vértice na lista de v1 terá um peso diferente de v2
+            }
+
+            return v2NaListaDeV1.peso;
+        }
+
         //Grafo GetAGMKruskal()
         //{
 
@@ -288,10 +385,10 @@ namespace TP
         public int GetGrauEntrada(Vertice v1)
         {
             int grauEntrada = 0;
-            List<List<Vertice>> listasComVertice = grafo.Values.Where(lista => lista.Contains(v1)).ToList();// recupera as listas que contem o vértice
+            List<List<Vertice>> listasComVertice = grafo.Values.Where(lista => Contem(v1, lista) != null).ToList();// recupera as listas que contem o vértice
             listasComVertice.ForEach(lista =>
             {
-                grauEntrada += lista.Count(vertice => vertice == v1);
+                grauEntrada += lista.Count(vertice => vertice.nome == v1.nome);
 
             });
 
@@ -308,7 +405,6 @@ namespace TP
             }
             return grauSaida;
         }
-
 
         bool hasCiclo = false; int tempo;
         public bool HasCiclo()// travessia em profundidade, se tiver aresta de retorno o grafo é ciclico
@@ -340,15 +436,17 @@ namespace TP
             v.cor = "azul";
             v.descoberta = ++tempo;
             List<Vertice> listaDeAdj;
-            if(grafo.TryGetValue(v, out listaDeAdj))
+            if (grafo.TryGetValue(v, out listaDeAdj))
             {
-                foreach(Vertice vertice in listaDeAdj)
+                foreach (Vertice vertice in listaDeAdj)
                 {
-                    if (vertice.cor.Equals("branco"))
+                    Vertice verticeReal = BuscaVerticeReal(vertice);
+                    if (verticeReal.cor.Equals("branco"))
                     {
-                        vertice.pred = v;
-                        Visita(vertice, tempo, vertice.cor);
-                    }else if (vertice.cor.Equals("azul"))// esta visitando um vértice já visitado, ou seja tem ciclo
+                        verticeReal.pred = v;
+                        Visita(verticeReal, tempo, verticeReal.cor);
+                    }
+                    else if (verticeReal.cor.Equals("azul"))// esta visitando um vértice já visitado, ou seja tem ciclo
                     {
                         hasCiclo = true;
                     }
@@ -365,12 +463,12 @@ namespace TP
             foreach (Vertice v in grafo.Keys)
             {
                 List<Vertice> listaDeAdj;
-                Console.Write("Vértice " + v.valor + ":");
+                Console.Write("Vértice " + v.nome + ":");
                 if (grafo.TryGetValue(v, out listaDeAdj))
                 {
                     if (listaDeAdj.Count > 0)
                     {
-                        listaDeAdj.ForEach(vertice => Console.Write(" -> " + vertice.nome));
+                        listaDeAdj.ForEach(vertice => Console.Write(" -> " + vertice.nome + "/" + vertice.peso));
                     }
                     else
                     {
@@ -386,6 +484,24 @@ namespace TP
 
             Console.Read();
         }
+
+        private Vertice Contem(Vertice v, List<Vertice> lista)// verifica se o vértice ve está dentro da lista e retorna o vértice original
+        {
+            Vertice verticeNaLista = lista.Find(vertice => vertice.nome == v.nome);
+            if (verticeNaLista == null)
+            {
+                return null;
+            }
+            else
+            {
+                return grafo.Keys.Where(ver => ver.nome == verticeNaLista.nome).ElementAt(0);
+            }
+        }
+
+        private Vertice BuscaVerticeReal(Vertice v)
+        {
+            return grafo.Keys.Where(vertice => vertice.nome == v.nome).ElementAt(0);
+        }//busca o vértice na lista de vértices(keys)
 
     }
 }

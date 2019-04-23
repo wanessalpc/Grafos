@@ -26,48 +26,61 @@ namespace TP
             Grafo g = new Grafo();
             Program objArquivo = new Program();
 
-            Vertice v1 = new Vertice(), v2 = new Vertice(), v3 = new Vertice();
-            v1.valor = 1;
+            Vertice v1 = new Vertice(), v2 = new Vertice(), v3 = new Vertice(), v4 = new Vertice(), v5 = new Vertice(), v6 = new Vertice(); // vértices originais
             v1.nome = "V1";
-            v2.valor = 2;
             v2.nome = "V2";
-            v3.valor = 3;
             v3.nome = "V3";
+            v4.nome = "V4";
+            v5.nome = "V5";
+            v6.nome = "V6";
             List<Vertice> adj1 = new List<Vertice>();
             List<Vertice> adj2 = new List<Vertice>();
             List<Vertice> adj3 = new List<Vertice>();
+            List<Vertice> adj4 = new List<Vertice>();
+            List<Vertice> adj5 = new List<Vertice>();
+            List<Vertice> adj6 = new List<Vertice>();
 
-            adj1.Add(v2);
-            adj1.Add(v3);
-            adj2.Add(v1);
-            adj2.Add(v3);
-            adj3.Add(v1);
-            adj3.Add(v2);
+            adj1.Add(new Vertice("V2", 4));
+            adj1.Add(new Vertice("V3", 2));
+            adj1.Add(new Vertice("V5", 3));
 
-            //--- grafo direcionado
-            //adj1.Add(v1);
-            //adj2.Add(v1);
-            //adj2.Add(v2);
-            //adj2.Add(v3);
-            //adj2.Add(v3);
-            //adj3.Add(v1);
+            adj2.Add(new Vertice("V1", 4));
+            adj2.Add(new Vertice("V4", 5));
 
+            adj3.Add(new Vertice("V1", 2));
+            adj3.Add(new Vertice("V4", 1));
+            adj3.Add(new Vertice("V5", 6));
+            adj3.Add(new Vertice("V6", 3));
 
+            adj4.Add(new Vertice("V2", 5));
+            adj4.Add(new Vertice("V3", 1));
+            adj4.Add(new Vertice("V6", 6));
 
+            adj5.Add(new Vertice("V1", 3));
+            adj5.Add(new Vertice("V3", 6));
+            adj5.Add(new Vertice("V6", 2));
+
+            adj6.Add(new Vertice("V3", 3));
+            adj6.Add(new Vertice("V4", 6));
+            adj6.Add(new Vertice("V5", 2));
 
             g.grafo.Add(v1, adj1);
             g.grafo.Add(v2, adj2);
             g.grafo.Add(v3, adj3);
+            g.grafo.Add(v4, adj4);
+            g.grafo.Add(v5, adj5);
+            g.grafo.Add(v6, adj6);
 
-            if ()//colocar o método que quer ser testado
-            {
-                Console.WriteLine("ye");
-            }
-            else
-            {
-                Console.WriteLine("nay");
-            }
+            //if (g.IsUnicursal())//colocar o método que quer ser testado
+            //{
+            //    Console.WriteLine("ye");
+            //}
+            //else
+            //{
+            //    Console.WriteLine("nay");
+            //}
 
+            g.ImprimirGrafo(g.GetAGMPrim(v1));
 
 
 
@@ -77,50 +90,3 @@ namespace TP
         }
     }
 }
-
-
-//    , v4 = new Vertice(), v5 = new Vertice();
-//v1.valor = 1;
-//            v1.nome = "V1";
-//            v2.valor = 2;
-//            v2.nome = "V2";
-//            v3.valor = 3;
-//            v3.nome = "V3";
-//            v4.valor = 4;
-//            v4.nome = "V4";
-//            v5.valor = 5;
-//            v5.nome = "V5";
-
-//            List<Vertice> adj1 = new List<Vertice>();
-//List<Vertice> adj2 = new List<Vertice>();
-//List<Vertice> adj3 = new List<Vertice>();
-//List<Vertice> adj4 = new List<Vertice>();
-//List<Vertice> adj5 = new List<Vertice>();
-
-//adj1.Add(v2);
-//            adj1.Add(v3);
-
-//            adj2.Add(v1);
-//            adj2.Add(v3);
-//            adj2.Add(v4);
-//            adj2.Add(v5);
-
-
-//            adj3.Add(v1);
-//            adj3.Add(v2);
-//            adj3.Add(v4);
-
-//            adj4.Add(v2);
-//            adj4.Add(v3);
-//            adj4.Add(v5);
-
-//            adj5.Add(v2);
-//            adj5.Add(v4);
-
-
-
-//            g.grafo.Add(v1, adj1);
-//            g.grafo.Add(v2, adj2);
-//            g.grafo.Add(v3, adj3);
-//            g.grafo.Add(v4, adj4);
-//            g.grafo.Add(v5, adj5);

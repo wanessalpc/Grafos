@@ -8,13 +8,24 @@ namespace TP
 {
     public class Vertice
     {
-        public int valor;
+        public int peso;
         public string nome;
         public string cor;
         public Vertice pred;
         public int distancia;
         public int descoberta;
         public int termino;
+
+
+        public Vertice()
+        {
+
+        }
+        public Vertice(string nome, int peso)
+        {
+            this.nome = nome;
+            this.peso = peso;
+        }
 
     }
 }
