@@ -278,11 +278,11 @@ namespace TP
             List<Vertice> borda = new List<Vertice>();// conjuntos dos vertices candidatos a serem escolhidos na proxima iteração, para serem incluidos em T
             Dictionary<Vertice, int> custo = new Dictionary<Vertice, int>();// custo da inclusão do vértice v em T
             Dictionary<Vertice, List<Vertice>> T = new Dictionary<Vertice, List<Vertice>>();
-            borda.Add(v1);
             foreach (Vertice v in grafo.Keys)
             {
-                custo.Add(v, int.MaxValue);
+                custo.Add(v, int.MaxValue);// add os vértices originais
             }
+            borda.Add(v1);
             custo[v1] = 0;
 
             while (borda.Count > 0 && custo.Count > 0)
@@ -291,30 +291,11 @@ namespace TP
                 var menorCusto = custo.OrderBy(kvp => kvp.Value).First();// ordena o custo para o menor custo ficar em primeiro
 
                 Vertice vComMenorCusto = borda.Find(v => v.nome == menorCusto.Key.nome);// encontra na borda onde fica o vértice com menor custo
-
-                List<Vertice> listinha = new List<Vertice>();
-
-                if (vComMenorCusto.pred != null)
-                {
-                    if (incluidos.Contains(vComMenorCusto.pred))
-                    {
-                        if (T.TryGetValue(vComMenorCusto, out List<Vertice> listaDeAdj))
-                        {
-                            listaDeAdj.Add(vComMenorCusto);
-                            T.Add(vComMenorCusto, listaDeAdj);
-                        }
-                    }
-                }
-                else
-                {
-                   //é o primeiro termo
-                }
-
+                vComMenorCusto.peso = custo[vComMenorCusto];
                 incluidos.Add(vComMenorCusto);
                 Console.WriteLine("Inserido: " + vComMenorCusto.nome);
                 custo.Remove(vComMenorCusto);
                 borda.Remove(vComMenorCusto);
-
 
                 foreach (Vertice x in grafo.Keys)
                 {
@@ -326,7 +307,7 @@ namespace TP
                             {
                                 peso = Peso(vComMenorCusto, x);
                                 custo[x] = peso;
-                                x.pred = vComMenorCusto;
+                                x.pai = vComMenorCusto;
                                 borda.Add(x);
                             }
                         }
@@ -334,13 +315,9 @@ namespace TP
                 }
             }
 
-            foreach (Vertice x in grafo.Keys)
+            foreach(Vertice v in incluidos)
             {
-                if (grafo.TryGetValue(x, out List<Vertice> listaDeAdj))
-                {
-
-                }
-
+                T = AdicionarNoGrafo(T,v.pai, v);
             }
 
             return T;
@@ -371,10 +348,69 @@ namespace TP
             return v2NaListaDeV1.peso;
         }
 
-        //Grafo GetAGMKruskal()
-        //{
+        public Dictionary<Vertice, List<Vertice>> GetAGMKruskal()
+        {
+            //Arestas do grafo = values do dictionary, talvez tenha que ler o grafo para encontrar a ligaçao entre as arestas
+            List<Vertice> arestas = new List<Vertice>();
+            foreach (Vertice v in grafo.Keys)
+            {
+                v.chefe = v.nome;
+                if (grafo.TryGetValue(v, out List<Vertice> listaAdj))
+                {
+                    listaAdj.ForEach(vertice =>
+                    {
+                        vertice.pai = v; //! - aqui os vértices ainda estão amarrados
+                        vertice.chefe = vertice.nome;
+                        arestas.Add(vertice);
+                    });
+                }
+            }
 
-        //}
+            arestas.OrderBy(v => v.peso);// validar isso
+            Dictionary<Vertice, List<Vertice>> T = new Dictionary<Vertice, List<Vertice>>();
+            int nIncluidos = 0;
+            int cont = 0;
+
+            while (nIncluidos < grafo.Keys.Count - 1)
+            {
+                Vertice aresta = arestas[0];
+
+                if (!aresta.chefe.Equals(aresta.pai.chefe))
+                {
+                    T = AdicionarNoGrafo(T, aresta.pai, aresta);
+                    // add chefes
+                    nIncluidos++;
+                }
+                cont++;
+            }
+
+            return T;
+        }
+
+        private Dictionary<Vertice, List<Vertice>> AdicionarNoGrafo(Dictionary<Vertice, List<Vertice>> grafoParametro, Vertice key, Vertice value)
+        {
+            if (key != null)
+            {
+                if (Contem(key, grafoParametro.Keys.ToList()) == null)
+                {
+                    List<Vertice> listaNova = new List<Vertice>();
+                    listaNova.Add(value);
+                    grafoParametro.Add(key, listaNova);
+                }
+                else
+                {
+                    if (grafoParametro.TryGetValue(key, out List<Vertice> listaAdj))
+                    {
+                        listaAdj.Add(value);
+                    }
+                }
+            }
+            else
+            {
+                grafoParametro.Add(value, new List<Vertice>());
+            }
+            return grafoParametro;
+        }
         //int GetCutVertices()
         //{
 

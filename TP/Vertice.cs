@@ -15,7 +15,8 @@ namespace TP
         public int distancia;
         public int descoberta;
         public int termino;
-
+        public string chefe;
+        public Vertice pai;
 
         public Vertice()
         {
