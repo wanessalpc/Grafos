@@ -317,7 +317,7 @@ namespace TP
 
             foreach(Vertice v in incluidos)
             {
-                T = AdicionarNoGrafo(T,v.pai, v);
+                T = AdicionarNoGrafo(T, v.pai, v);
             }
 
             return T;
@@ -350,7 +350,7 @@ namespace TP
 
         public Dictionary<Vertice, List<Vertice>> GetAGMKruskal()
         {
-            //Arestas do grafo = values do dictionary, talvez tenha que ler o grafo para encontrar a ligaçao entre as arestas
+            //Arestas do grafo
             List<Vertice> arestas = new List<Vertice>();
             foreach (Vertice v in grafo.Keys)
             {
@@ -359,7 +359,7 @@ namespace TP
                 {
                     listaAdj.ForEach(vertice =>
                     {
-                        vertice.pai = v; //! - aqui os vértices ainda estão amarrados
+                        vertice.pai = v; 
                         vertice.chefe = vertice.nome;
                         arestas.Add(vertice);
                     });
@@ -378,7 +378,7 @@ namespace TP
                 if (!aresta.chefe.Equals(aresta.pai.chefe))
                 {
                     T = AdicionarNoGrafo(T, aresta.pai, aresta);
-                    // add chefes
+                    arestas.Remove(aresta);
                     nIncluidos++;
                 }
                 cont++;
@@ -387,6 +387,7 @@ namespace TP
             return T;
         }
 
+        //TODO - melhorar a montagem do grafo, atualmente monta apenas para o vértices que se ligam com os menores caminhos
         private Dictionary<Vertice, List<Vertice>> AdicionarNoGrafo(Dictionary<Vertice, List<Vertice>> grafoParametro, Vertice key, Vertice value)
         {
             if (key != null)
@@ -404,6 +405,27 @@ namespace TP
                         listaAdj.Add(value);
                     }
                 }
+                //--- virse versa
+                if (Contem(value, grafoParametro.Keys.ToList()) == null)
+                {
+                    List<Vertice> listaNova = new List<Vertice>();
+                    Vertice keyAux = new Vertice();
+                    keyAux.nome = key.nome;
+                    keyAux.peso = value.peso;
+                    listaNova.Add(keyAux);
+                    grafoParametro.Add(value, listaNova);
+                }
+                else
+                {
+                    if (grafoParametro.TryGetValue(value, out List<Vertice> listaAdj))
+                    {
+                        Vertice keyAux = new Vertice();
+                        keyAux.nome = key.nome;
+                        keyAux.peso = value.peso;
+                        listaAdj.Add(key);
+                    }
+                }
+
             }
             else
             {
