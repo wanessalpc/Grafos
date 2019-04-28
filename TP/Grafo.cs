@@ -6,7 +6,7 @@ namespace TP
 {
     public class Grafo
     {
-
+        public bool isDirecionado = false;
         public Dictionary<Vertice, List<Vertice>> grafo = new Dictionary<Vertice, List<Vertice>>();
 
         /*      
@@ -125,7 +125,7 @@ namespace TP
                     if (Contem(v, listaDeAdj) == null)//não tiver loops
                     {
 
-                        if (verticesFiltrados.Count == listaDeAdj.Count && !verticesFiltrados.Except(listaDeAdj).Any())
+                        if (verticesFiltrados.Count == listaDeAdj.Count && verticesFiltrados.Where(v1 => listaDeAdj.Any(v2 => v2.nome.Equals(v1.nome))).Count() > 0)
                         {
                             contagem++;// significa que o vértice está ligado a todos os outros vértices
                         }
@@ -252,13 +252,14 @@ namespace TP
                     if (grafo.TryGetValue(v, out listaDeAdj))
                     {
                         List<Vertice> listaDeAdjReal = listaDeAdj.ConvertAll(vertices => BuscaVerticeReal(vertices));
-                        if (verticesFiltrados.Count == listaDeAdj.Count && !verticesFiltrados.Except(listaDeAdjReal).Any()) // se as duas listas forem iguais o vértice está ligado aos outros 
+                        if (verticesFiltrados.Count == listaDeAdj.Count &&
+                            verticesFiltrados.Where(v1 => listaDeAdjReal.Any(v2 => v2.nome.Equals(v1.nome))).Count() > 0) // se as duas listas forem iguais o vértice está ligado aos outros 
                         {
                             complementar.Add(v, new List<Vertice>());//adicionar ele no complementar com uma lista vazia/nula
                         }
                         else
                         {
-                            List<Vertice> verticesFaltam = verticesFiltrados.Except(listaDeAdjReal).ToList();// os vértices que o v não está ligado
+                            List<Vertice> verticesFaltam = verticesFiltrados.Where(v1 => listaDeAdjReal.Any(v2 => v2.nome.Equals(v1.nome))).ToList();// os vértices que o v não está ligado
                             complementar.Add(v, verticesFaltam);
                         }
 
@@ -315,9 +316,9 @@ namespace TP
                 }
             }
 
-            foreach(Vertice v in incluidos)
+            foreach (Vertice v in incluidos)
             {
-                T = AdicionarNoGrafo(T, v.pai, v);
+                T = AdicionarNoGrafo(T, v.pai, v, isDirecionado);
             }
 
             return T;
@@ -359,14 +360,14 @@ namespace TP
                 {
                     listaAdj.ForEach(vertice =>
                     {
-                        vertice.pai = v; 
+                        vertice.pai = v;
                         vertice.chefe = vertice.nome;
                         arestas.Add(vertice);
                     });
                 }
             }
 
-            arestas.OrderBy(v => v.peso);// validar isso
+            arestas.Sort((a, b) => a.peso.CompareTo(b.peso));
             Dictionary<Vertice, List<Vertice>> T = new Dictionary<Vertice, List<Vertice>>();
             int nIncluidos = 0;
             int cont = 0;
@@ -377,7 +378,7 @@ namespace TP
 
                 if (!aresta.chefe.Equals(aresta.pai.chefe))
                 {
-                    T = AdicionarNoGrafo(T, aresta.pai, aresta);
+                    T = AdicionarNoGrafo(T, aresta.pai, aresta, isDirecionado);
                     arestas.Remove(aresta);
                     nIncluidos++;
                 }
@@ -387,12 +388,12 @@ namespace TP
             return T;
         }
 
-        //TODO - melhorar a montagem do grafo, atualmente monta apenas para o vértices que se ligam com os menores caminhos
-        private Dictionary<Vertice, List<Vertice>> AdicionarNoGrafo(Dictionary<Vertice, List<Vertice>> grafoParametro, Vertice key, Vertice value)
+        private Dictionary<Vertice, List<Vertice>> AdicionarNoGrafo(Dictionary<Vertice, List<Vertice>> grafoParametro, Vertice key, Vertice value, bool isDirecionado)
         {
             if (key != null)
             {
-                if (Contem(key, grafoParametro.Keys.ToList()) == null)
+                Vertice verticeNoGrafo = Contem(key, grafoParametro.Keys.ToList());
+                if (verticeNoGrafo == null)
                 {
                     List<Vertice> listaNova = new List<Vertice>();
                     listaNova.Add(value);
@@ -400,31 +401,39 @@ namespace TP
                 }
                 else
                 {
-                    if (grafoParametro.TryGetValue(key, out List<Vertice> listaAdj))
+                    if (grafoParametro.TryGetValue(verticeNoGrafo, out List<Vertice> listaAdj))
                     {
                         listaAdj.Add(value);
                     }
                 }
                 //--- virse versa
-                if (Contem(value, grafoParametro.Keys.ToList()) == null)
+                if (!isDirecionado)
                 {
-                    List<Vertice> listaNova = new List<Vertice>();
-                    Vertice keyAux = new Vertice();
-                    keyAux.nome = key.nome;
-                    keyAux.peso = value.peso;
-                    listaNova.Add(keyAux);
-                    grafoParametro.Add(value, listaNova);
-                }
-                else
-                {
-                    if (grafoParametro.TryGetValue(value, out List<Vertice> listaAdj))
+                    verticeNoGrafo = Contem(value, grafoParametro.Keys.ToList());
+                    if (verticeNoGrafo == null)
                     {
+                        List<Vertice> listaNova = new List<Vertice>();
                         Vertice keyAux = new Vertice();
                         keyAux.nome = key.nome;
                         keyAux.peso = value.peso;
-                        listaAdj.Add(key);
+                        listaNova.Add(keyAux);
+                        grafoParametro.Add(value, listaNova);
+                    }
+                    else
+                    {
+                        if (grafoParametro.TryGetValue(verticeNoGrafo, out List<Vertice> listaAdj))
+                        {
+                            if (Contem(key, listaAdj) == null)
+                            {
+                                Vertice keyAux = new Vertice();
+                                keyAux.nome = key.nome;
+                                keyAux.peso = value.peso;
+                                listaAdj.Add(keyAux);
+                            }
+                        }
                     }
                 }
+
 
             }
             else

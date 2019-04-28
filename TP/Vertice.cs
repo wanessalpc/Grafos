@@ -22,6 +22,10 @@ namespace TP
         {
 
         }
+        public Vertice(string nome)
+        {
+            this.nome = nome;
+        }
         public Vertice(string nome, int peso)
         {
             this.nome = nome;
