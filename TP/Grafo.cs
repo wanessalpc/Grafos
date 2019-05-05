@@ -25,11 +25,6 @@ namespace TP
                 if (Contem(BuscaVerticeReal(v2), listaDeAdj) != null)
                 {
                     isAdj = true;
-                    Console.WriteLine("Os vértices : " + v1.nome + " e " + v2.nome + " são adjacentes");
-                }
-                else
-                {
-                    Console.WriteLine("Não são adjacentes :(");
                 }
             }
 
@@ -60,7 +55,6 @@ namespace TP
             {
                 if (listaDeAdj.Count() == 0 || (listaDeAdj.Count() == 1 && Contem(v1, listaDeAdj) != null))// se a lista estiver ou se ela conter um elemento e este for o próprio vértice(loop)
                 {
-                    Console.WriteLine(v1.nome + " é isolado.");
                     isIsolado = true;
                 }
             }
@@ -75,7 +69,6 @@ namespace TP
             {
                 if (listaDeAdj.Count == 1)
                 {
-                    Console.WriteLine(v1.nome + " é pendente.");
                     isPendente = true;
                 }
             }
@@ -92,7 +85,6 @@ namespace TP
 
             if (grafo.Values.All(lista => lista.Count == grauBase))// vê se todas as listas adjacentes tem o mesmo tamanho
             {
-                Console.WriteLine("E regular");
                 isRegular = true;
             }
 
@@ -107,7 +99,6 @@ namespace TP
             // grafo.Values.Any() ->  o valor sempre existe, no caso deve-se verificar se a lista está vazia( ou se existe alguma lista que não esteja vazia)
             if (grafo.Values.Any(lista => lista.Count() > 0))
             {
-                Console.WriteLine("Nao e nulo");
                 isNulo = false;
             }
 
@@ -140,7 +131,6 @@ namespace TP
             }
             if (contagem == grafo.Keys.Count())
             {
-                Console.WriteLine("E completo.");
                 isCompleto = true;
             }
             return isCompleto;
@@ -221,7 +211,6 @@ namespace TP
             {
                 if (grafo.Values.Any(lista => lista.Count % 2 > 0)) // Grau par = lista de adj com tamanho par, no caso veremos se alguma lista tem tamanho ímpar
                 {
-                    Console.WriteLine("Nao e euleriano");
                     isEuleriano = false;
                 }
             }
@@ -238,7 +227,6 @@ namespace TP
 
             if (numeroVerticesImpares / 2 > 0)
             {
-                Console.WriteLine("E unicursal");
                 isUnicursal = true;
             }
 
@@ -259,24 +247,33 @@ namespace TP
 
                     if (grafo.TryGetValue(v, out listaDeAdj))
                     {
-                        List<Vertice> listaDeAdjReal = listaDeAdj.ConvertAll(vertices => BuscaVerticeReal(vertices));
+
                         if (verticesFiltrados.Count == listaDeAdj.Count &&
-                            verticesFiltrados.Where(v1 => listaDeAdjReal.Any(v2 => v2.nome.Equals(v1.nome))).Count() > 0) // se as duas listas forem iguais o vértice está ligado aos outros 
+                            verticesFiltrados.Where(v1 => listaDeAdj.Any(v2 => v2.nome.Equals(v1.nome))).Count() > 0) // se as duas listas forem iguais o vértice está ligado aos outros 
                         {
                             complementar.Add(v, new List<Vertice>());//adicionar ele no complementar com uma lista vazia/nula
                         }
                         else
                         {
-                            List<Vertice> verticesFaltam = verticesFiltrados.Where(v1 => listaDeAdjReal.Any(v2 => v2.nome.Equals(v1.nome))).ToList();// os vértices que o v não está ligado
-                            complementar.Add(v, verticesFaltam);
+                            if (IsIsolado(v))// se o vertice estiver isolado
+                            {
+                                complementar.Add(v, verticesFiltrados);// adiciona todos os outros vértices que ele não se liga
+                            }
+                            else
+                            {
+                                List<Vertice> verticesFaltam = verticesFiltrados.Where(v1 => !listaDeAdj.Any(v2 => v2.nome.Equals(v1.nome))).ToList();// os vértices que o v não está ligado
+                                complementar.Add(v, verticesFaltam);
+                            }
                         }
-
                     }
-
                 }
-
+                ImprimirGrafo(complementar);
             }
-            ImprimirGrafo(complementar);
+            else
+            {
+                Console.WriteLine("O grafo é completo");
+            }
+
 
             return complementar;
         }
