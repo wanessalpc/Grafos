@@ -8,13 +8,13 @@ namespace TP
     class Program
     {
 
-       // public static Grafo g = new Grafo();
-/*
+        public static Grafo g = new Grafo();
+
         public void LerArquivo() // Lê arquivo e cria vagas se nescessario.
         {
-            if (File.Exists(@"C:\Users\Rafael Badaró\Desktop\Eng. Software\5-período\Grafos\TP\grafo.txt"))
+            if (File.Exists(@"C:\Users\Rafael Badaró\Desktop\Eng. Software\5-período\Grafos\TP\aciclico.txt"))
             {
-                using (StreamReader reader = new StreamReader(@"C:\Users\Rafael Badaró\Desktop\Eng. Software\5-período\Grafos\TP\grafo.txt"))
+                using (StreamReader reader = new StreamReader(@"C:\Users\Rafael Badaró\Desktop\Eng. Software\5-período\Grafos\TP\aciclico.txt"))
                 {
 
                     while (!reader.EndOfStream) // Enquanto arquivo não acaba.
@@ -36,7 +36,7 @@ namespace TP
                             }
                             else
                             {
-                            g.isDirecionado = true;
+                                g.isDirecionado = true;
                                 if (dados[3].TrimStart().Equals("1"))//se for 1, a aresta sai de v1 e vai pra v2
                                 {
                                     g.grafo = AdicionarNoGrafo(g.grafo, v1, new Vertice(v2.nome, Int32.Parse(dados[2])), true);
@@ -53,8 +53,7 @@ namespace TP
                 }
             }
         }
-*/
-/*
+
         private Dictionary<Vertice, List<Vertice>> AdicionarNoGrafo(Dictionary<Vertice, List<Vertice>> grafoParametro, Vertice key, Vertice value, bool isDirecionado)
         {
             if (key != null)
@@ -105,88 +104,102 @@ namespace TP
             }
             return grafoParametro;
         }
-*/
-        //private Vertice Contem(Vertice v, List<Vertice> lista)
-        //{
-        //    Vertice verticeNaLista = lista.Find(vertice => vertice.nome == v.nome);
-        //    if (verticeNaLista == null)
-        //    {
-        //        return null;
-        //    }
-        //    else
-        //    {
-        //        return g.grafo.Keys.Where(ver => ver.nome == verticeNaLista.nome).ElementAt(0);
-        //    }
-        //}
+
+        private Vertice Contem(Vertice v, List<Vertice> lista)
+        {
+            Vertice verticeNaLista = lista.Find(vertice => vertice.nome == v.nome);
+            if (verticeNaLista == null)
+            {
+                return null;
+            }
+            else
+            {
+                return g.grafo.Keys.Where(ver => ver.nome == verticeNaLista.nome).ElementAt(0);
+            }
+        }
 
 
         public static void Main(string[] args)
         {
-            Grafo g = new Grafo();
+
             Program objArquivo = new Program();
 
-            Vertice v1 = new Vertice(), v2 = new Vertice(), v3 = new Vertice(), v4 = new Vertice(), v5 = new Vertice(), v6 = new Vertice(); // vértices originais
-            v1.nome = "V1";
-            v2.nome = "V2";
-            v3.nome = "V3";
-            v4.nome = "V4";
-            v5.nome = "V5";
-            v6.nome = "V6";
-            List<Vertice> adj1 = new List<Vertice>();
-            List<Vertice> adj2 = new List<Vertice>();
-            List<Vertice> adj3 = new List<Vertice>();
-            List<Vertice> adj4 = new List<Vertice>();
-            List<Vertice> adj5 = new List<Vertice>();
-            List<Vertice> adj6 = new List<Vertice>();
+            objArquivo.LerArquivo();
+            Grafo gCopia = g;
 
-            adj1.Add(new Vertice("V2", 4));
-            adj1.Add(new Vertice("V3", 2));
-            adj1.Add(new Vertice("V5", 3));
-
-            adj2.Add(new Vertice("V1", 4));
-            adj2.Add(new Vertice("V4", 5));
-
-            adj3.Add(new Vertice("V1", 2));
-            adj3.Add(new Vertice("V4", 1));
-            adj3.Add(new Vertice("V5", 6));
-            adj3.Add(new Vertice("V6", 3));
-
-            adj4.Add(new Vertice("V2", 5));
-            adj4.Add(new Vertice("V3", 1));
-            adj4.Add(new Vertice("V6", 6));
-
-            adj5.Add(new Vertice("V1", 3));
-            adj5.Add(new Vertice("V3", 6));
-            adj5.Add(new Vertice("V6", 2));
-
-            adj6.Add(new Vertice("V3", 3));
-            adj6.Add(new Vertice("V4", 6));
-            adj6.Add(new Vertice("V5", 2));
-
-            g.grafo.Add(v1, adj1);
-            g.grafo.Add(v2, adj2);
-            g.grafo.Add(v3, adj3);
-            g.grafo.Add(v4, adj4);
-            g.grafo.Add(v5, adj5);
-            g.grafo.Add(v6, adj6);
-
-
-
-
-
-
-            //objArquivo.LerArquivo();
-            g.ImprimirGrafo(g.GetAGMKruskal());
-
-
-            //if ()//colocar o método que quer ser testado
+            gCopia.ImprimirGrafo(gCopia.grafo);
+            foreach (Vertice v in gCopia.grafo.Keys)
+            {
+                Console.WriteLine(v.nome + "-" + gCopia.GetGrauEntrada(v));
+                Console.WriteLine(v.nome + "-" + gCopia.GetGrauSaida(v));              
+            }
+            Console.WriteLine("CICLO");
+            if (gCopia.HasCiclo())
+            {
+                Console.WriteLine("Sim.");
+            }
+            else
+            {
+                Console.WriteLine("Não.");
+            }
+            //Console.WriteLine("NULO");
+            //if (gCopia.IsNulo())
             //{
-            //    Console.WriteLine("ye");
+            //    Console.WriteLine("Sim.");
             //}
             //else
             //{
-            //    Console.WriteLine("nay");
+            //    Console.WriteLine("Não.");
             //}
+            //Console.WriteLine("Completo");
+            //if (gCopia.IsCompleto())
+            //{
+            //    Console.WriteLine("Sim.");
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Não.");
+            //}
+            //Console.WriteLine("CONEXO");
+            //if (gCopia.IsConexo())
+            //{
+            //    Console.WriteLine("Sim.");
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Não.");
+            //}
+            //Console.WriteLine("EULERIANO");
+            //if (gCopia.IsEuleriano())
+            //{
+            //    Console.WriteLine("Sim.");
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Não.");
+            //}
+            //Console.WriteLine("UNICURSAL");
+            //if (gCopia.IsUnicursal())
+            //{
+            //    Console.WriteLine("Sim.");
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Não.");
+            //}
+            //Console.WriteLine("COMPLEMENTAR");
+            //gCopia.GetComplementar();
+            //Console.WriteLine("PRIM");
+            //gCopia.ImprimirGrafo(gCopia.GetAGMPrim(new Vertice("V1")));
+            //Console.WriteLine("KRUSKAL");
+            //gCopia.ImprimirGrafo(gCopia.GetAGMKruskal());
+
+            //--dirigido
+
+
+            Console.WriteLine();
+
+
 
 
             Console.ReadKey();

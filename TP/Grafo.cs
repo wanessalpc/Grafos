@@ -20,9 +20,9 @@ namespace TP
         {
             bool isAdj = false;
             List<Vertice> listaDeAdj;
-            if (grafo.TryGetValue(v1, out listaDeAdj)) // O TryGetValue retorna um booleano, se encontra o value ele é passado pra variável no out
+            if (grafo.TryGetValue(BuscaVerticeReal(v1), out listaDeAdj)) // O TryGetValue retorna um booleano, se encontra o value ele é passado pra variável no out
             {
-                if (Contem(v2, listaDeAdj) != null)
+                if (Contem(BuscaVerticeReal(v2), listaDeAdj) != null)
                 {
                     isAdj = true;
                     Console.WriteLine("Os vértices : " + v1.nome + " e " + v2.nome + " são adjacentes");
@@ -41,8 +41,9 @@ namespace TP
         public int GetGrau(Vertice v1)
         {
             List<Vertice> listaDeAdj;
-            if (grafo.TryGetValue(v1, out listaDeAdj))
+            if (grafo.TryGetValue(BuscaVerticeReal(v1), out listaDeAdj))
             {
+                Console.WriteLine("Grau de " + v1.nome + ": " + listaDeAdj.Count);
                 return listaDeAdj.Count; // para cada vértice na lista de adjacentes, o grau do vértice aumenta
             }
             else
@@ -55,10 +56,11 @@ namespace TP
         {
             bool isIsolado = false;
             List<Vertice> listaDeAdj;
-            if (grafo.TryGetValue(v1, out listaDeAdj))
+            if (grafo.TryGetValue(BuscaVerticeReal(v1), out listaDeAdj))
             {
                 if (listaDeAdj.Count() == 0 || (listaDeAdj.Count() == 1 && Contem(v1, listaDeAdj) != null))// se a lista estiver ou se ela conter um elemento e este for o próprio vértice(loop)
                 {
+                    Console.WriteLine(v1.nome + " é isolado.");
                     isIsolado = true;
                 }
             }
@@ -69,10 +71,11 @@ namespace TP
         {
             bool isPendente = false;
             List<Vertice> listaDeAdj;
-            if (grafo.TryGetValue(v1, out listaDeAdj))
+            if (grafo.TryGetValue(BuscaVerticeReal(v1), out listaDeAdj))
             {
                 if (listaDeAdj.Count == 1)
                 {
+                    Console.WriteLine(v1.nome + " é pendente.");
                     isPendente = true;
                 }
             }
@@ -89,6 +92,7 @@ namespace TP
 
             if (grafo.Values.All(lista => lista.Count == grauBase))// vê se todas as listas adjacentes tem o mesmo tamanho
             {
+                Console.WriteLine("E regular");
                 isRegular = true;
             }
 
@@ -103,6 +107,7 @@ namespace TP
             // grafo.Values.Any() ->  o valor sempre existe, no caso deve-se verificar se a lista está vazia( ou se existe alguma lista que não esteja vazia)
             if (grafo.Values.Any(lista => lista.Count() > 0))
             {
+                Console.WriteLine("Nao e nulo");
                 isNulo = false;
             }
 
@@ -135,6 +140,7 @@ namespace TP
             }
             if (contagem == grafo.Keys.Count())
             {
+                Console.WriteLine("E completo.");
                 isCompleto = true;
             }
             return isCompleto;
@@ -215,6 +221,7 @@ namespace TP
             {
                 if (grafo.Values.Any(lista => lista.Count % 2 > 0)) // Grau par = lista de adj com tamanho par, no caso veremos se alguma lista tem tamanho ímpar
                 {
+                    Console.WriteLine("Nao e euleriano");
                     isEuleriano = false;
                 }
             }
@@ -231,6 +238,7 @@ namespace TP
 
             if (numeroVerticesImpares / 2 > 0)
             {
+                Console.WriteLine("E unicursal");
                 isUnicursal = true;
             }
 
@@ -283,8 +291,8 @@ namespace TP
             {
                 custo.Add(v, int.MaxValue);// add os vértices originais
             }
-            borda.Add(v1);
-            custo[v1] = 0;
+            borda.Add(BuscaVerticeReal(v1));
+            custo[BuscaVerticeReal(v1)] = 0;
 
             while (borda.Count > 0 && custo.Count > 0)
             {
@@ -442,23 +450,69 @@ namespace TP
             }
             return grafoParametro;
         }
-        //int GetCutVertices()
-        //{
 
-        //}
+        /*
+        public int GetCutVertices()// Remover os vértices com maior lista de adj
+        {
+            int numeroDeCutVertices = 0;// numero minimo de vertices que se pode tirar para tornar o grafo desconexo
+            int maiorLista = Int32.MinValue;
+            foreach (Vertice x in grafo.Keys)
+            {
+                if (grafo.TryGetValue(x, out List<Vertice> listaAdj))
+                {
+                    if (listaAdj.Count > maiorLista)
+                    {
+                        maiorLista = listaAdj.Count;//pega o tamanho da maior lista
+                    }
+                }
+            }
 
+            Vertice v;// vértice com lista de adj grande
+
+            List<Vertice> verticesFiltrados = grafo.Keys.Where(vertice => vertice != v).ToList();// lista com os outros vértices do grafo
+
+            foreach (Vertice x in verticesFiltrados)
+            {
+                if (grafo.TryGetValue(x, out List<Vertice> listaAdj))
+                {
+                    Vertice verticeNaLista = listaAdj.Find(vertice => vertice.nome.Equals(v.nome));
+                    if (verticeNaLista != null)
+                    {
+                        listaAdj.Remove(verticeNaLista);
+                        numeroDeCutVertices++;
+                        ImprimirGrafo(grafo);
+                        Console.WriteLine("------------------------");
+                        if (!IsConexo())
+                        {
+                            return numeroDeCutVertices;
+                        }
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+
+            return numeroDeCutVertices;
+
+
+
+        }
+        */
         //-------------- Grafos Direcionados 
 
         public int GetGrauEntrada(Vertice v1)
         {
             int grauEntrada = 0;
-            List<List<Vertice>> listasComVertice = grafo.Values.Where(lista => Contem(v1, lista) != null).ToList();// recupera as listas que contem o vértice
+            List<List<Vertice>> listasComVertice = grafo.Values.Where(lista => Contem(BuscaVerticeReal(v1), lista) != null).ToList();// recupera as listas que contem o vértice
             listasComVertice.ForEach(lista =>
             {
                 grauEntrada += lista.Count(vertice => vertice.nome == v1.nome);
 
             });
-
+            Console.WriteLine("Grau de entrada de " + v1.nome + ": " + grauEntrada);
             return grauEntrada;
         }
 
@@ -466,10 +520,11 @@ namespace TP
         {
             int grauSaida = 0;
             List<Vertice> listaDeAdj;
-            if (grafo.TryGetValue(v1, out listaDeAdj))
+            if (grafo.TryGetValue(BuscaVerticeReal(v1), out listaDeAdj))
             {
                 grauSaida = listaDeAdj.Count;
             }
+            Console.WriteLine("Grau de saida de " + v1.nome + ": " + grauSaida);
             return grauSaida;
         }
 
