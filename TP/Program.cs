@@ -47,6 +47,15 @@ namespace TP
                                 }
                             }
                         }
+                        else
+                        {
+                            for(int i = 1; i <= Int32.Parse(linha); i++) // Cria e adiciona os vértices vazios no grafo
+                            {
+                                Vertice v = new Vertice();
+                                v.nome = "V" + i;
+                                g.grafo.Add(v, new List<Vertice>());
+                            }
+                        }
 
                     }
 
