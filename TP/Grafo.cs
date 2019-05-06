@@ -225,7 +225,7 @@ namespace TP
 
             int numeroVerticesImpares = grafo.Values.Where(lista => lista.Count % 2 > 0).Count();// Número de vértices de grau ímpar
 
-            if (numeroVerticesImpares / 2 > 0)
+            if (numeroVerticesImpares == 2)
             {
                 isUnicursal = true;
             }
